@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FX Setup Desk</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#14607a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: watchlist rail on the left, selected pair's chart and trade plan in the middle, risk tools below. */
+:root{
+  --bg:#eef2f4;--panel:#fbfcfd;--line:#d3dce1;--fg:#16262e;--muted:#566b76;--accent:#14607a;--accent-fg:#ffffff;
+  --up:#0d7f6b;--down:#b23a48;--warn:#9a6200;--warn-bg:#fbf0d9;--down-bg:#f9e6e8;--up-bg:#dcf2ed;--neutral-bg:#e4eaee;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#10191f;--panel:#17232b;--line:#2b3b45;--fg:#e4edf1;--muted:#94a8b3;--accent:#6cc0dc;--accent-fg:#0b171d;
+  --up:#45c9ae;--down:#ee7f8c;--warn:#e7b65a;--warn-bg:#392c12;--down-bg:#3d1e23;--up-bg:#123a32;--neutral-bg:#23323b;color-scheme:dark;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 var(--body)}
+.wrap{max-width:1280px;margin:auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:14px}
+header{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between}
+h1{font-size:20px;margin:0;font-weight:700;letter-spacing:-.01em}
+h2{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:600}
+.status{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.banner{padding:10px 14px;border-radius:6px;background:var(--warn-bg);color:var(--fg);border:1px solid var(--warn)}
+.banner.err{background:var(--down-bg);border-color:var(--down)}
+.keyrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.keyrow input{flex:1 1 220px;min-width:0}
+input,select{font:13px var(--mono);padding:7px 9px;border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--fg);width:100%}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+button{font:600 13px var(--body);padding:7px 13px;border-radius:5px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-fg);cursor:pointer}
+button.ghost{background:transparent;color:var(--accent)}
+a{color:var(--accent)}
+.main{display:grid;grid-template-columns:270px minmax(0,1fr);gap:14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;min-width:0}
+.rail{padding:6px}
+.row{all:unset;box-sizing:border-box;display:grid;grid-template-columns:1fr auto;gap:1px 8px;padding:9px 10px;width:100%;border-radius:4px;cursor:pointer;border-left:3px solid transparent}
+.row:hover{background:var(--neutral-bg)}
+.row:focus-visible{outline:2px solid var(--accent)}
+.row[aria-pressed=true]{background:var(--neutral-bg);border-left-color:var(--accent)}
+.row b{font:600 13px var(--mono)}
+.row .px{font:500 13px var(--mono);text-align:right}
+.row .st{font-size:12px;color:var(--muted)}
+.row .st.long{color:var(--up);font-weight:600}.row .st.short{color:var(--down);font-weight:600}
+.row .edge{font-size:11.5px;color:var(--muted);text-align:right;font-family:var(--mono)}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 16px;align-items:baseline;margin-bottom:8px}
+.pair{font:600 22px var(--mono)}
+.price{font:500 22px var(--mono);font-variant-numeric:tabular-nums}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.pill{padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;background:var(--neutral-bg)}
+.pill.long,.pill.good{background:var(--up-bg);color:var(--up)}
+.pill.short,.pill.bad{background:var(--down-bg);color:var(--down)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+canvas{display:block;width:100%;height:340px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:5px 12px;font-variant-numeric:tabular-nums}
+.kv dt{color:var(--muted)}.kv dd{margin:0;font:500 13px var(--mono);text-align:right}
+dl{margin:0}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:12px}
+label{font-size:12px;color:var(--muted);display:grid;gap:3px}
+.note{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+.check{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.check li{display:grid;grid-template-columns:20px 1fr;gap:6px}
+.check .y{color:var(--up);font-weight:700}.check .n{color:var(--down);font-weight:700}
+.check input{width:auto;margin:3px 0 0}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th{font-size:12px;color:var(--muted);text-align:right;font-weight:500;padding:4px 8px;border-bottom:1px solid var(--line)}
+td{font:13px var(--mono);text-align:right;padding:5px 8px;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+tr.me td{background:var(--neutral-bg);font-weight:600}
+td .bar{display:inline-block;height:8px;background:var(--down);border-radius:1px;vertical-align:middle;margin-right:6px}
+footer{font-size:12.5px;color:var(--muted);max-width:80ch}
+footer p{margin:0 0 6px}
+@media(max-width:820px){.main,.grid2{grid-template-columns:minmax(0,1fr)}canvas{height:260px}
+  .rail{display:flex;overflow-x:auto;gap:4px;scroll-snap-type:x proximity}
+  .row{flex:0 0 172px;scroll-snap-align:start;border-left:0;border-bottom:3px solid transparent}
+  .row[aria-pressed=true]{border-bottom-color:var(--accent)}
+  input{font-size:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>FX Setup Desk</h1>
+    <div class="status" id="status" aria-live="polite"></div>
+  </header>
+  <div class="banner" id="banner">
+    <div id="bannerText"></div>
+    <form class="keyrow" id="keyForm">
+      <input id="key" type="password" autocomplete="off" placeholder="Paste your free Twelve Data API key" aria-label="Twelve Data API key">
+      <button type="submit">Connect live prices</button>
+      <button type="button" class="ghost" id="forget" hidden>Remove key</button>
+    </form>
+  </div>
+  <div class="main">
+    <nav class="panel rail" id="rail" aria-label="Currency pairs"></nav>
+    <main class="panel">
+      <div class="head"><div class="pair" id="pair"></div><div class="price" id="price"></div></div>
+      <div class="pills" id="pills"></div>
+      <canvas id="chart" role="img" aria-label="15-minute candlestick chart with moving averages"></canvas>
+      <p class="note" id="legend"></p>
+    </main>
+  </div>
+  <div class="grid2">
+    <section class="panel">
+      <h2>Position size and trade plan</h2>
+      <div class="fields">
+        <label>Account (USD)<input id="bal" type="number" min="1" step="any" value="1000"></label>
+        <label>Risk per trade (%)<input id="risk" type="number" min="0.1" max="100" step="0.1" value="1"></label>
+        <label>Reward multiple (R)<input id="rr" type="number" min="0.5" max="10" step="0.5" value="2"></label>
+        <label>Broker spread (pips)<input id="spread" type="number" min="0" step="0.1" value="1"></label>
+        <label>Leverage (1:x)<input id="lev" type="number" min="1" step="1" value="100"></label>
+      </div>
+      <dl class="kv" id="plan"></dl>
+      <p class="note" id="planNote"></p>
+    </section>
+    <section class="panel">
+      <h2>Before you enter</h2>
+      <ul class="check" id="check"></ul>
+      <h2 style="margin-top:16px">Rule tested on this pair</h2>
+      <dl class="kv" id="bt"></dl>
+      <p class="note">Rule: 1-hour and 15-minute trends agree, price pulls back near the 20 EMA, RSI is not stretched, 07:00–20:00 UTC only. Stop is 1.5 ATR. Trades exit at stop, target or after 8 hours. Spread is deducted. If a candle touches both stop and target, it counts as a loss.</p>
+    </section>
+  </div>
+  <section class="panel">
+    <h2>What your risk level does over 100 trades</h2>
+    <div class="fields" style="max-width:320px"><label>Assumed win rate (%)<input id="wr" type="number" min="1" max="99" step="1" value="38"></label></div>
+    <div class="tw"><table><thead><tr><th>Risk per trade</th><th>Typical end balance</th><th>Chance of losing half at some point</th><th>Chance of ending below start</th></tr></thead><tbody id="sim"></tbody></table></div>
+    <p class="note" id="simNote"></p>
+  </section>
+  <footer>
+    <p>This tool flags setups from a fixed rule. It does not predict prices, and it is not financial advice. Forex trading can lose your whole deposit, faster with leverage.</p>
+    <p>Kenya's Capital Markets Authority figures, as <a href="https://serrarigroup.com/kenyan-forex-losses-rise-to-ksh7-12-billion-in-2025/" target="_blank" rel="noopener">reported here</a>: 77.58% of online forex accounts lost money in 2025, with an estimated net client loss of KSh5.87 billion.</p>
+    <p>Prices: <a href="https://twelvedata.com/pricing" target="_blank" rel="noopener">Twelve Data</a>, indicative rates that can differ from your broker's. Your key stays on this device and goes only to Twelve Data.</p>
+  </footer>
+</div>
+<script src="engine.js"></script>
+<script>
+"use strict";
+const CREDIT_CAP=400,GAP_MS=8000; /* 400 leaves the rest of the 800 daily requests for the alert job */
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const data={};let selected="EUR/USD",mode="sample",apiKey=null,errMsg="",pausedUntil=0;
+
+/* ---------- simulation (seeded, so numbers don't jump) ---------- */
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function simulate(riskPct,win,rr,trades=100,runs=4000){
+  const R=rng(42),f=riskPct/100,ends=[];let half=0,below=0;
+  for(let i=0;i<runs;i++){let b=1,hit=false;for(let t=0;t<trades;t++){b*=R()<win?1+f*rr:1-f;if(b<=.5)hit=true}ends.push(b);if(hit)half++;if(b<1)below++}
+  ends.sort((a,b)=>a-b);return{median:ends[runs>>1],half:half/runs,below:below/runs};
+}
+
+/* ---------- sample data ---------- */
+function makeSample(pair,idx){
+  const R=rng(1000+idx),base={"EUR/USD":1.1,"GBP/USD":1.3,"USD/JPY":150,"AUD/USD":.66,"USD/CAD":1.38,"USD/CHF":.85,"NZD/USD":.6}[pair],vol=base*.00045,C=[];
+  let t=Math.floor(Date.now()/M15)*M15,ts=[];
+  while(ts.length<3000){t-=M15;const d=new Date(t),w=d.getUTCDay();if(w!==6&&w!==0)ts.push(t)}ts.reverse();
+  let p=base,drift=0;
+  for(const u of ts){drift=drift*.995+(R()-.5)*vol*.03;const o=p,n=3;let hi=o,lo=o;for(let k=0;k<n;k++){p+=drift+(R()-.5)*vol;hi=Math.max(hi,p);lo=Math.min(lo,p)}C.push({t:u,o,h:hi,l:lo,c:p})}
+  return C;
+}
+
+/* ---------- live data ---------- */
+const queue=[];let qTimer=null;
+const creditKey=()=>"fxdesk.credits."+new Date().toISOString().slice(0,10);
+const creditsUsed=()=>+(store.get(creditKey())||0);
+function marketClosed(n=new Date()){const d=n.getUTCDay(),h=n.getUTCHours();return d===6||(d===5&&h>=21)||(d===0&&h<21)}
+function enqueue(pair){if(!queue.includes(pair))queue.push(pair);if(!qTimer)pump()}
+async function pump(){
+  if(!queue.length||mode!=="live"){qTimer=null;return}
+  const wait=pausedUntil-Date.now();if(wait>0){qTimer=setTimeout(pump,wait);return}
+  if(creditsUsed()>=CREDIT_CAP){errMsg="Daily data limit reached. Live updates resume after 00:00 UTC.";queue.length=0;qTimer=null;render();return}
+  const pair=queue.shift();qTimer=setTimeout(pump,GAP_MS);await fetchPair(pair);
+}
+async function fetchPair(pair){
+  const had=data[pair]&&data[pair].live,size=had?6:5000,u="https://api.twelvedata.com/time_series?"+new URLSearchParams({symbol:pair,interval:"15min",outputsize:size,timezone:"UTC",apikey:apiKey});
+  try{
+    store.set(creditKey(),creditsUsed()+1);
+    const res=await fetch(u),j=await res.json();
+    if(j.status==="error"||!j.values){
+      if(j.code===401||j.code===403){errMsg="Twelve Data rejected that key. Check it and connect again.";mode="sample";queue.length=0;loadSample()}
+      else if(j.code===429){errMsg="Data limit hit. Waiting a minute before retrying.";pausedUntil=Date.now()+61000;enqueue(pair)}
+      else errMsg="Twelve Data said: "+(j.message||"unknown error");
+      render();return;
+    }
+    const fresh=parseCandles(j);let all=fresh;
+    if(had){const m=new Map(data[pair].all.map(c=>[c.t,c]));fresh.forEach(c=>m.set(c.t,c));all=[...m.values()].sort((a,b)=>a.t-b.t)}
+    setData(pair,all,true);errMsg="";data[pair].fetched=Date.now();render();
+  }catch(e){errMsg="Could not reach Twelve Data. Check your connection. Prices below may be out of date.";render()}
+}
+function setData(pair,all,live){
+  const now=Date.now(),closed=all.filter(c=>c.t+M15<=now),A=analyse(closed),last=all[all.length-1];
+  data[pair]={all,A,live,last,bt:null,fetched:now};
+}
+function loadSample(){PAIRS.forEach((p,i)=>setData(p,makeSample(p,i),false))}
+let tickers=[];
+function startLive(){
+  tickers.forEach(clearInterval);tickers=[];mode="live";errMsg="";PAIRS.forEach(p=>{if(data[p])data[p].live=false});
+  enqueue(selected);PAIRS.filter(p=>p!==selected).forEach(enqueue);
+  tickers.push(setInterval(()=>{if(!marketClosed()&&!document.hidden)enqueue(selected)},60000));
+  tickers.push(setInterval(()=>{if(!marketClosed()&&!document.hidden)PAIRS.forEach(enqueue)},15*60000));
+  tickers.push(setInterval(renderStatus,1000));
+}
+
+/* ---------- rendering ---------- */
+const inputs=()=>({bal:+$("bal").value||0,risk:+$("risk").value||0,rr:+$("rr").value||2,spread:+$("spread").value||0,lev:+$("lev").value||1,wr:+$("wr").value||0});
+const fmt=(n,d=2)=>Number(n).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
+const usd=n=>"$"+fmt(n);
+const localT=t=>new Date(t).toLocaleString(undefined,{weekday:"short",hour:"2-digit",minute:"2-digit"});
+function btFor(p){const d=data[p],I=inputs(),k=I.rr+"|"+I.spread+"|"+d.A.C.length;if(!d.bt||d.btk!==k){d.bt=backtest(d.A,pipOf(p),I.rr,I.spread);d.btk=k}return d.bt}
+function stateOf(p){const A=data[p].A;return evalAt(A,A.C.length-1)}
+function isLoaded(p){return data[p]&&(mode==="sample"||data[p].live)}
+function renderRail(){
+  const r=$("rail");r.textContent="";
+  for(const p of PAIRS){
+    const b=document.createElement("button");b.className="row";b.type="button";b.setAttribute("aria-pressed",p===selected);
+    const load=isLoaded(p),s=load?stateOf(p):{label:"Loading…",cls:""},v=load?edgeVerdict(btFor(p)):null;
+    b.innerHTML='<b></b><span class="px"></span><span class="st"></span><span class="edge"></span>';
+    b.children[0].textContent=p;b.children[1].textContent=load?data[p].last.c.toFixed(dpOf(p)):"–";
+    b.children[2].textContent=s.label;if(s.cls)b.children[2].classList.add(s.cls);
+    b.children[3].textContent=load&&data[p].bt&&data[p].bt.n?(data[p].bt.avg>=0?"+":"")+data[p].bt.avg.toFixed(2)+"R":"";
+    if(v)b.title=v.t;
+    b.onclick=()=>{selected=p;if(mode==="live")enqueue(p);render()};r.appendChild(b);
+  }
+}
+function renderStatus(){
+  const now=new Date(),el=$("status");let s=[];
+  s.push(marketClosed(now)?"Market closed for the weekend":"Market open");
+  s.push("Session hours "+SESSION.map(h=>{const d=new Date(now);d.setUTCHours(h,0,0,0);return d.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"})}).join("–")+" your time");
+  if(mode==="live"){s.push("Data used today "+creditsUsed()+"/"+CREDIT_CAP);const d=data[selected];if(d&&d.live)s.push("Updated "+Math.round((Date.now()-d.fetched)/1000)+"s ago")}
+  el.innerHTML="";s.forEach(x=>{const i=document.createElement("span");i.textContent=x;el.appendChild(i)});
+}
+function renderBanner(){
+  const b=$("banner"),t=$("bannerText");b.classList.toggle("err",!!errMsg);$("forget").hidden=!apiKey;
+  if(errMsg){b.hidden=false;t.textContent=errMsg+(mode==="sample"?" Showing made-up sample prices until then.":"");$("keyForm").hidden=mode==="live";return}
+  if(mode==="sample"){t.innerHTML='<strong>Sample data: these prices are made up.</strong> Do not trade from them. For live prices, get a free key at <a href="https://twelvedata.com/register" target="_blank" rel="noopener">twelvedata.com</a> (8 requests a minute, 800 a day) and paste it here.';$("keyForm").hidden=false;b.hidden=false;return}
+  b.hidden=true;
+}
+function plan(p){
+  const d=data[p],A=d.A,i=A.C.length-1,I=inputs(),s=stateOf(p),a=A.a[i],pip=pipOf(p),dp=dpOf(p);
+  const px=d.last.c,dirv=s.dir||0,dist=STOP_ATR*a,stopPips=dist/pip;
+  const pos=sizePosition({pair:p,px,stopPips,bal:I.bal,riskPct:I.risk,lev:I.lev});
+  return{s,dist,stopPips,pos,px,dirv,pip,dp,rr:I.rr,I,entry:px,stop:dirv?px-dirv*dist:null,tgt:dirv?px+dirv*dist*I.rr:null};
+}
+function renderMain(){
+  const p=selected;$("pair").textContent=p;
+  if(!isLoaded(p)){$("price").textContent="Loading…";$("pills").textContent="";$("plan").textContent="";$("bt").textContent="";$("check").textContent="";return}
+  const d=data[p],P=plan(p),b=btFor(p),v=edgeVerdict(b);
+  $("price").textContent=P.px.toFixed(P.dp);
+  const pills=$("pills");pills.textContent="";
+  const add=(t,c)=>{const e=document.createElement("span");e.className="pill "+(c||"");e.textContent=t;pills.appendChild(e)};
+  add(P.s.label,P.s.cls);add(v.t,v.c);
+  const i=d.A.C.length-1;add("RSI "+d.A.r[i].toFixed(0));add("ATR "+(d.A.a[i]/P.pip).toFixed(1)+" pips");
+  add("1h trend "+(d.A.ht[i]>0?"up":d.A.ht[i]<0?"down":"unknown"));
+  $("legend").textContent=(d.live?"Live":"Sample")+" 15-minute candles. Latest "+localT(d.last.t)+". Thin line: 20 EMA. Dashed line: 50 EMA."+(P.dirv?" Lines mark the entry, stop and target.":"");
+  const kv=$("plan");kv.textContent="";
+  const put=(k,val)=>{const a=document.createElement("dt"),c=document.createElement("dd");a.textContent=k;c.textContent=val;kv.append(a,c)};
+  const lossUsd=P.pos.actualRisk+P.pos.lots*P.I.spread*P.pos.pv;
+  if(P.dirv){put("Direction",P.dirv>0?"Long (buy)":"Short (sell)");put("Entry (about)",P.entry.toFixed(P.dp));put("Stop",P.stop.toFixed(P.dp));put("Target",P.tgt.toFixed(P.dp))}
+  else put("Direction","No setup now");
+  put("Stop distance",fmt(P.stopPips,1)+" pips");put("Position size",P.pos.lots?fmt(P.pos.lots)+" lots":"Below 0.01 lot");
+  if(P.pos.lots){put("Loss if stopped, with spread",usd(lossUsd));put("Gain at target, after spread",usd(P.pos.actualRisk*P.rr-P.pos.lots*P.I.spread*P.pos.pv));put("Margin needed",usd(P.pos.margin));put("Exposure",fmt(P.pos.exposure,1)+"× account")}
+  let n="";
+  if(!P.pos.lots)n="The smallest common trade size, 0.01 lot, would risk more than "+P.I.risk+"% with this stop. Skip this trade, or use a broker with smaller lots.";
+  else if(P.pos.margin>P.I.bal)n="This position needs more margin than your account holds.";
+  else if(P.I.risk>2)n="Above 2% per trade, a normal losing streak does serious damage. See the table below.";
+  else if(!P.dirv)n="Sizes use the current price and a 1.5 ATR stop, so you can see what a trade would look like.";
+  $("planNote").textContent=n;
+  const hr=(new Date()).getUTCHours(),fresh=d.live?Date.now()-d.fetched<300000&&!marketClosed():false;
+  const ck=$("check"),news=store.get("fxdesk.news")===new Date().toISOString().slice(0,13);ck.textContent="";
+  const items=[[fresh,d.live?"Prices updated in the last 5 minutes, market open":"Live prices connected"],[hr>=SESSION[0]&&hr<SESSION[1],"Inside session hours"],[!!P.dirv,"Rule shows a setup on the latest closed candle"],[v.c==="good","Test shows an edge on this pair after spread"],[P.I.risk<=2&&P.pos.lots>0,"Risk is 2% or less and the size is tradable"]];
+  for(const[ok,t]of items){const li=document.createElement("li");li.innerHTML='<span class="'+(ok?"y":"n")+'" aria-hidden="true">'+(ok?"✓":"✕")+'</span><span></span>';li.children[1].textContent=(ok?"":"Not yet: ")+t;ck.appendChild(li)}
+  const li=document.createElement("li");li.innerHTML='<input type="checkbox" id="newsChk" aria-label="News checked"><span>No major release for either currency in the next hour. <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener">Check the calendar</a></span>';ck.appendChild(li);
+  const nc=$("newsChk");nc.checked=news;nc.onchange=()=>{nc.checked?store.set("fxdesk.news",new Date().toISOString().slice(0,13)):store.del("fxdesk.news")};
+  const bt=$("bt");bt.textContent="";const pb=(k,val)=>{const a=document.createElement("dt"),c=document.createElement("dd");a.textContent=k;c.textContent=val;bt.append(a,c)};
+  pb("Candles tested",fmt(d.A.C.length,0));pb("Trades",String(b.n));
+  if(b.n){pb("Win rate",(b.win*100).toFixed(0)+"%");pb("Average result",(b.avg>=0?"+":"")+b.avg.toFixed(2)+"R");pb("Likely range of average",b.low.toFixed(2)+"R to "+b.high.toFixed(2)+"R");pb("Verdict",v.t)}
+  drawChart(p,P);
+}
+function renderSim(){
+  const I=inputs(),rows=[...new Set([1,2,5,10,20,I.risk])].filter(x=>x>0&&x<100).sort((a,b)=>a-b),tb=$("sim"),win=I.wr/100;tb.textContent="";
+  for(const r of rows){const s=simulate(r,win,I.rr),tr=document.createElement("tr");if(r===I.risk)tr.className="me";
+    const end=I.bal*s.median;tr.innerHTML="<td></td><td></td><td></td><td></td>";tr.children[0].textContent=r+"%"+(r===I.risk?" (yours)":"");tr.children[1].textContent=usd(end);
+    const bar=document.createElement("span");bar.className="bar";bar.style.width=Math.round(s.half*60)+"px";tr.children[2].append(bar,(s.half*100).toFixed(0)+"%");tr.children[3].textContent=(s.below*100).toFixed(0)+"%";tb.appendChild(tr)}
+  const be=100/(1+I.rr);$("simNote").textContent="4,000 simulated runs with a "+I.wr+"% win rate and a "+I.rr+"R reward. Break-even win rate before costs is "+be.toFixed(1)+"%. This is arithmetic from your inputs, not a forecast. Typical means the middle result.";
+}
+function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+function drawChart(p,P){
+  const cv=$("chart"),W=cv.clientWidth,Hh=cv.clientHeight;if(!W)return;const dpr=devicePixelRatio||1;cv.width=W*dpr;cv.height=Hh*dpr;const g=cv.getContext("2d");g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,W,Hh);
+  const A=data[p].A,count=Math.min(W<500?56:96,A.C.length),st=A.C.length-count,C=A.C.slice(st),padR=66,padB=20,padT=8;
+  let hi=-Infinity,lo=Infinity;C.forEach(c=>{hi=Math.max(hi,c.h);lo=Math.min(lo,c.l)});
+  for(let i=st;i<A.C.length;i++)if(!isNaN(A.e50[i])){hi=Math.max(hi,A.e50[i],A.e20[i]);lo=Math.min(lo,A.e50[i],A.e20[i])}
+  if(P.dirv){hi=Math.max(hi,P.stop,P.tgt);lo=Math.min(lo,P.stop,P.tgt)}
+  const m=(hi-lo)*.04||1e-4;hi+=m;lo-=m;
+  const y=v=>padT+(hi-v)/(hi-lo)*(Hh-padT-padB),pw=W-padR,cw=pw/count,x=i=>cw*i+cw/2;
+  const muted=css("--muted"),line=css("--line"),up=css("--up"),down=css("--down"),acc=css("--accent"),warn=css("--warn");
+  g.font='11px '+css("--mono");g.textBaseline="middle";
+  for(let k=0;k<=4;k++){const v=lo+(hi-lo)*k/4,yy=y(v);g.strokeStyle=line;g.lineWidth=1;g.beginPath();g.moveTo(0,yy+.5);g.lineTo(pw,yy+.5);g.stroke();g.fillStyle=muted;g.textAlign="left";g.fillText(v.toFixed(P.dp),pw+6,Math.min(Math.max(yy,8),Hh-padB-2))}
+  g.textAlign="center";g.fillStyle=muted;const step=Math.ceil(count/(W<500?3:6));
+  for(let i=step>>1;i<count;i+=step)g.fillText(new Date(C[i].t).toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"}),x(i),Hh-8);
+  C.forEach((c,i)=>{const col=c.c>=c.o?up:down,X=x(i);g.strokeStyle=col;g.fillStyle=col;g.lineWidth=1;g.beginPath();g.moveTo(Math.round(X)+.5,y(c.h));g.lineTo(Math.round(X)+.5,y(c.l));g.stroke();const w=Math.max(1.5,cw*.62),t=y(Math.max(c.o,c.c)),b=Math.max(1,y(Math.min(c.o,c.c))-t);g.fillRect(X-w/2,t,w,b)});
+  const ln=(arr,dash)=>{g.setLineDash(dash);g.strokeStyle=acc;g.lineWidth=1.4;g.beginPath();let on=false;for(let i=0;i<count;i++){const v=arr[st+i];if(isNaN(v))continue;on?g.lineTo(x(i),y(v)):g.moveTo(x(i),y(v));on=true}g.stroke();g.setLineDash([])};
+  ln(A.e20,[]);ln(A.e50,[5,4]);
+  if(P.dirv)[[P.entry,acc,"Entry"],[P.stop,down,"Stop"],[P.tgt,up,"Target"]].forEach(([v,col,t])=>{g.strokeStyle=col;g.lineWidth=1.3;g.setLineDash([2,3]);g.beginPath();g.moveTo(0,y(v));g.lineTo(pw,y(v));g.stroke();g.setLineDash([]);g.fillStyle=col;g.textAlign="right";g.fillText(t,pw-4,y(v)-8)});
+}
+function render(){renderBanner();renderStatus();renderMain();renderRail();renderSim()}
+
+/* ---------- wiring ---------- */
+$("keyForm").addEventListener("submit",e=>{e.preventDefault();const k=$("key").value.trim();if(!k)return;apiKey=k;store.set("fxdesk.key",k);$("key").value="";startLive();render()});
+$("forget").onclick=()=>{store.del("fxdesk.key");apiKey=null;tickers.forEach(clearInterval);tickers=[];clearTimeout(qTimer);qTimer=null;mode="sample";errMsg="";queue.length=0;loadSample();render()};
+["bal","risk","rr","spread","lev","wr"].forEach(id=>{$(id).addEventListener("input",()=>{store.set("fxdesk."+id,$(id).value);render()});const v=store.get("fxdesk."+id);if(v)$(id).value=v});
+document.addEventListener("visibilitychange",()=>{if(document.hidden||mode!=="live"||marketClosed())return;enqueue(selected);PAIRS.filter(p=>p!==selected&&(!data[p]||!data[p].live||Date.now()-data[p].fetched>9e5)).forEach(enqueue)});
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+let rz;addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(render,150)});
+loadSample();
+if(!window.__NO_BOOT){const k=store.get("fxdesk.key");if(k){apiKey=k;startLive()}render();setInterval(renderStatus,1000)}
+</script>
+</body>
+</html>
