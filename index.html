@@ -78,6 +78,30 @@ tr.me td{background:var(--neutral-bg);font-weight:600}
 td .bar{display:inline-block;height:8px;background:var(--down);border-radius:1px;vertical-align:middle;margin-right:6px}
 footer{font-size:12.5px;color:var(--muted);max-width:80ch}
 footer p{margin:0 0 6px}
+[hidden]{display:none!important}
+.adv{display:grid;gap:14px}
+.summary{font-size:17px;font-weight:600;margin:0}
+.sub{color:var(--muted);margin:4px 0 0}
+.plist{display:grid;gap:6px;align-content:start}
+.prow{all:unset;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);cursor:pointer}
+.prow[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.prow:focus-visible{outline:2px solid var(--accent)}
+.prow .nm{font:600 15px var(--mono)}
+.prow .full{font-size:12.5px;color:var(--muted);margin-left:6px}
+.prow .why{grid-column:1/-1;font-size:13px;color:var(--muted)}
+.chip{padding:3px 10px;border-radius:99px;font-weight:700;font-size:13px;background:var(--neutral-bg);color:var(--muted);white-space:nowrap}
+.chip.buy{background:var(--up-bg);color:var(--up)}.chip.sell{background:var(--down-bg);color:var(--down)}
+.big{font-size:24px;font-weight:700;margin:4px 0}
+.big.buy{color:var(--up)}.big.sell{color:var(--down)}
+.steps{margin:10px 0;padding-left:22px;display:grid;gap:9px}
+.steps b{font-family:var(--mono);font-weight:600}
+.trust{padding:10px 12px;border-radius:6px;background:var(--warn-bg);border:1px solid var(--warn);margin:10px 0}
+.trust.good{background:var(--up-bg);border-color:var(--up)}
+.sgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:14px;align-items:start}
+#sDetail p{margin:6px 0}
+#practiceBtn{margin-top:8px}
+button:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:820px){.sgrid{grid-template-columns:minmax(0,1fr)}#sDetail{order:-1}}
 @media(max-width:820px){.main,.grid2{grid-template-columns:minmax(0,1fr)}canvas{height:260px}
   .rail{display:flex;overflow-x:auto;gap:4px;scroll-snap-type:x proximity}
   .row{flex:0 0 172px;scroll-snap-align:start;border-left:0;border-bottom:3px solid transparent}
@@ -90,6 +114,7 @@ footer p{margin:0 0 6px}
   <header>
     <h1>FX Setup Desk</h1>
     <div class="status" id="status" aria-live="polite"></div>
+    <button type="button" class="ghost" id="viewBtn">Show advanced view</button>
   </header>
   <div class="banner" id="banner">
     <div id="bannerText"></div>
@@ -99,6 +124,29 @@ footer p{margin:0 0 6px}
       <button type="button" class="ghost" id="forget" hidden>Remove key</button>
     </form>
   </div>
+  <div id="simple" class="adv">
+    <section class="panel">
+      <p class="summary" id="sSummary"></p>
+      <p class="sub">These are short-term trades. Each one lasts from minutes up to 8 hours. Most of the time the right answer is to wait.</p>
+    </section>
+    <div class="sgrid">
+      <div class="plist" id="sList" aria-label="Currency pairs"></div>
+      <section class="panel" id="sDetail" aria-live="polite"></section>
+    </div>
+    <section class="panel">
+      <h2>My money settings</h2>
+      <div class="fields">
+        <label>Account size (USD)<input id="sBal" type="number" min="1" step="any"></label>
+        <label>Most I'll lose per trade (%)<input id="sRisk" type="number" min="0.1" max="100" step="0.1"></label>
+      </div>
+      <p class="note">At 1%, one losing trade costs $10 on a $1,000 account. Beginners should stay at 1–2%.</p>
+    </section>
+    <section class="panel">
+      <h2>My practice trades</h2>
+      <div id="sPractice"></div>
+    </section>
+  </div>
+  <div id="adv" class="adv" hidden>
   <div class="main">
     <nav class="panel rail" id="rail" aria-label="Currency pairs"></nav>
     <main class="panel">
@@ -135,6 +183,7 @@ footer p{margin:0 0 6px}
     <div class="tw"><table><thead><tr><th>Risk per trade</th><th>Typical end balance</th><th>Chance of losing half at some point</th><th>Chance of ending below start</th></tr></thead><tbody id="sim"></tbody></table></div>
     <p class="note" id="simNote"></p>
   </section>
+  </div>
   <footer>
     <p>This tool flags setups from a fixed rule. It does not predict prices, and it is not financial advice. Forex trading can lose your whole deposit, faster with leverage.</p>
     <p>Kenya's Capital Markets Authority figures, as <a href="https://serrarigroup.com/kenyan-forex-losses-rise-to-ksh7-12-billion-in-2025/" target="_blank" rel="noopener">reported here</a>: 77.58% of online forex accounts lost money in 2025, with an estimated net client loss of KSh5.87 billion.</p>
@@ -310,7 +359,100 @@ function drawChart(p,P){
   ln(A.e20,[]);ln(A.e50,[5,4]);
   if(P.dirv)[[P.entry,acc,"Entry"],[P.stop,down,"Stop"],[P.tgt,up,"Target"]].forEach(([v,col,t])=>{g.strokeStyle=col;g.lineWidth=1.3;g.setLineDash([2,3]);g.beginPath();g.moveTo(0,y(v));g.lineTo(pw,y(v));g.stroke();g.setLineDash([]);g.fillStyle=col;g.textAlign="right";g.fillText(t,pw-4,y(v)-8)});
 }
-function render(){renderBanner();renderStatus();renderMain();renderRail();renderSim()}
+/* ---------- simple view ---------- */
+let view=store.get("fxdesk.view")==="advanced"?"advanced":"simple";
+function applyView(){$("simple").hidden=view!=="simple";$("adv").hidden=view!=="advanced";$("viewBtn").textContent=view==="simple"?"Show advanced view":"Show simple view"}
+function simpleState(p){
+  if(!isLoaded(p))return{chip:"Loading",cls:"",why:"Getting prices…"};
+  if(marketClosed())return{chip:"Closed",cls:"",why:"The market is closed for the weekend. It reopens late Sunday night."};
+  const s=stateOf(p);
+  if(s.dir)return{chip:s.dir>0?"Possible buy":"Possible sell",cls:s.dir>0?"buy":"sell",why:"Bet that "+betText(p,s.dir)+"."};
+  return{chip:"Wait",cls:"",why:plainWait(s.label)};
+}
+const PKEY="fxdesk.practice";
+function loadPr(){try{return JSON.parse(store.get(PKEY)||"[]")}catch(e){return[]}}
+function savePr(a){store.set(PKEY,JSON.stringify(a.slice(-200)))}
+function startPractice(p){
+  const P=plan(p);if(mode!=="live"||!P.dirv||!P.pos.lots)return;
+  const a=loadPr();a.push({pair:p,dir:P.dirv,entry:P.entry,stop:P.stop,tgt:P.tgt,dist:P.dist,t:Date.now(),lots:P.pos.lots,riskUsd:P.pos.actualRisk,cost:P.pos.lots*P.I.spread*P.pos.pv,status:"open"});
+  savePr(a);render();
+}
+/* Settles practice trades from real candles after the entry time. Same rules as the past test: if a candle touches both, it counts as a loss. */
+function settlePractice(){
+  const a=loadPr(),now=Date.now();let ch=false;
+  for(const tr of a){
+    if(tr.status!=="open")continue;const d=data[tr.pair];if(!d||!d.live)continue;
+    const start=Math.ceil(tr.t/M15)*M15,C=d.all.filter(c=>c.t>=start);let ex=null,how="";
+    for(let k=0;k<C.length&&k<MAX_HOLD;k++){const c=C[k];
+      if(tr.dir>0?c.l<=tr.stop:c.h>=tr.stop){ex=tr.stop;how="Hit stop-loss";break}
+      if(tr.dir>0?c.h>=tr.tgt:c.l<=tr.tgt){ex=tr.tgt;how="Hit take-profit";break}}
+    if(ex===null){const closed=C.filter(c=>c.t+M15<=now);if(closed.length>=MAX_HOLD){ex=closed[MAX_HOLD-1].c;how="Closed after 8 hours"}}
+    if(ex!==null){tr.exit=ex;tr.how=how;tr.pnl=(ex-tr.entry)*tr.dir/tr.dist*tr.riskUsd-tr.cost;tr.status=tr.pnl>0?"won":"lost";ch=true}
+  }
+  if(ch)savePr(a);return a;
+}
+function renderSimple(){
+  for(const[s,t]of[["sBal","bal"],["sRisk","risk"]])if(document.activeElement!==$(s))$(s).value=$(t).value;
+  const list=$("sList"),setups=[];list.textContent="";
+  for(const p of PAIRS){
+    const st=simpleState(p);if(st.cls)setups.push(p);
+    const b=document.createElement("button");b.type="button";b.className="prow";b.setAttribute("aria-pressed",p===selected);
+    b.innerHTML='<span><span class="nm"></span><span class="full"></span></span><span class="chip"></span><span class="why"></span>';
+    b.querySelector(".nm").textContent=p;b.querySelector(".full").textContent=pairName(p);
+    const c=b.querySelector(".chip");c.textContent=st.chip;if(st.cls)c.classList.add(st.cls);
+    b.querySelector(".why").textContent=st.why;
+    b.onclick=()=>{selected=p;if(mode==="live")enqueue(p);render()};list.appendChild(b);
+  }
+  $("sSummary").textContent=mode==="sample"?"These are made-up sample prices. Connect live prices above to see real signals.":
+    marketClosed()?"The market is closed. Nothing to do until it reopens.":
+    setups.length?(setups.length===1?"1 possible trade right now: ":setups.length+" possible trades right now: ")+setups.join(", "):"Nothing to do right now. That's normal.";
+  renderDetail();renderPractice();
+}
+function renderDetail(){
+  const el=$("sDetail"),p=selected;el.textContent="";
+  const add=(tag,txt,cls)=>{const x=document.createElement(tag);if(txt!=null)x.textContent=txt;if(cls)x.className=cls;el.appendChild(x);return x};
+  add("h2",p+" · "+pairName(p));
+  if(!isLoaded(p)){add("p","Getting prices…");return}
+  const st=simpleState(p),P=plan(p);
+  add("p","Price now: "+P.px.toFixed(P.dp),"sub");
+  if(!st.cls){add("p",st.chip,"big");add("p",st.why);add("p","Nothing to do on this pair. With alerts on, your phone tells you when there's a possible trade.","note");return}
+  const buy=P.dirv>0,b=btFor(p),v=edgeVerdict(b);
+  add("p",buy?"Possible BUY":"Possible SELL","big "+(buy?"buy":"sell"));
+  add("p","This is a bet that "+betText(p,P.dirv)+" over the next few hours.");
+  add("div",plainVerdict(v,b),"trust"+(v.c==="good"?" good":""));
+  if(!P.pos.lots){add("p","Your account is too small for this trade at your loss limit. Skip it.","note");return}
+  const loss=P.pos.actualRisk+P.pos.lots*P.I.spread*P.pos.pv,gain=P.pos.actualRisk*P.rr-P.pos.lots*P.I.spread*P.pos.pv;
+  add("p","If you take it, do this in your broker's app. Use a demo account first.","sub");
+  const ol=add("ol",null,"steps");
+  ol.innerHTML=`<li><b>${buy?"Buy":"Sell"}</b> ${p} with a trade size of <b>${fmt(P.pos.lots)} lots</b>.</li>
+<li>Set the <b>stop-loss</b> to <b>${P.stop.toFixed(P.dp)}</b>. If the price gets there, the trade closes and you lose about <b>${usd(loss)}</b>.</li>
+<li>Set the <b>take-profit</b> to <b>${P.tgt.toFixed(P.dp)}</b>. If the price gets there, the trade closes and you gain about <b>${usd(gain)}</b>.</li>
+<li>If neither happens within 8 hours, close the trade yourself.</li>`;
+  const n=add("p",null,"note");n.innerHTML='Before you enter, check there\'s no big news for these currencies in the next hour on the <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener">news calendar</a>.';
+  const open=loadPr().some(t=>t.status==="open"&&t.pair===p&&Math.abs(t.entry-P.entry)<P.dist*.25);
+  const btn=add("button",open?"Already practising this trade":"Practice this trade (no real money)");btn.type="button";btn.id="practiceBtn";btn.disabled=mode!=="live"||open;
+  if(mode!=="live")add("p","Connect live prices to practise.","note");
+}
+function renderPractice(){
+  const a=settlePractice(),el=$("sPractice");el.textContent="";
+  const done=a.filter(t=>t.status!=="open"),won=done.filter(t=>t.status==="won").length,tot=done.reduce((s,t)=>s+t.pnl,0);
+  const s=document.createElement("p");s.className="summary";
+  s.textContent=done.length?`${done.length} finished: ${won} won, ${done.length-won} lost, ${tot>=0?"+":"−"}${usd(Math.abs(tot))} in total`:"No finished practice trades yet.";
+  const g=document.createElement("p");g.className="sub";
+  g.textContent=done.length<30?`Practise at least 30 trades before using real money. You've finished ${done.length}. Open trades update when you open the app.`:
+    tot>0?"Your practice trades made money overall. Real trading adds slippage and nerves, so if you start, use the smallest trade size.":
+    "Your practice trades lost money overall. Real money would most likely lose too. Keep practising, or stop.";
+  el.append(s,g);
+  if(!a.length)return;
+  const w=document.createElement("div");w.className="tw";w.innerHTML='<table><thead><tr><th>Pair</th><th>Bet</th><th>Started</th><th>Result</th></tr></thead><tbody></tbody></table>';
+  const tb=w.querySelector("tbody");
+  for(const t of a.slice(-8).reverse()){const r=document.createElement("tr");r.innerHTML="<td></td><td></td><td></td><td></td>";
+    r.children[0].textContent=t.pair;r.children[1].textContent=t.dir>0?"Buy":"Sell";r.children[2].textContent=localT(t.t);
+    r.children[3].textContent=t.status==="open"?"Open":t.how+", "+(t.pnl>=0?"+":"−")+usd(Math.abs(t.pnl));
+    if(t.status!=="open")r.children[3].style.color=t.pnl>=0?"var(--up)":"var(--down)";tb.appendChild(r)}
+  el.appendChild(w);
+}
+function render(){renderBanner();renderStatus();if(view==="advanced"){renderMain();renderRail();renderSim()}else renderSimple()}
 
 /* ---------- wiring ---------- */
 $("keyForm").addEventListener("submit",e=>{e.preventDefault();const k=$("key").value.trim();if(!k)return;apiKey=k;store.set("fxdesk.key",k);$("key").value="";startLive();render()});
@@ -318,6 +460,10 @@ $("forget").onclick=()=>{store.del("fxdesk.key");apiKey=null;tickers.forEach(cle
 ["bal","risk","rr","spread","lev","wr"].forEach(id=>{$(id).addEventListener("input",()=>{store.set("fxdesk."+id,$(id).value);render()});const v=store.get("fxdesk."+id);if(v)$(id).value=v});
 document.addEventListener("visibilitychange",()=>{if(document.hidden||mode!=="live"||marketClosed())return;enqueue(selected);PAIRS.filter(p=>p!==selected&&(!data[p]||!data[p].live||Date.now()-data[p].fetched>9e5)).forEach(enqueue)});
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+$("viewBtn").onclick=()=>{view=view==="simple"?"advanced":"simple";store.set("fxdesk.view",view);applyView();render()};
+for(const[s,t]of[["sBal","bal"],["sRisk","risk"]])$(s).addEventListener("input",()=>{$(t).value=$(s).value;store.set("fxdesk."+t,$(s).value);render()});
+$("sDetail").addEventListener("click",ev=>{if(ev.target.id==="practiceBtn")startPractice(selected)});
+applyView();
 let rz;addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(render,150)});
 loadSample();
 if(!window.__NO_BOOT){const k=store.get("fxdesk.key");if(k){apiKey=k;startLive()}render();setInterval(renderStatus,1000)}

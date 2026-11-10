@@ -57,4 +57,21 @@ function sizePosition({pair,px,stopPips,bal,riskPct,lev}){
 }
 
 
-if(typeof module!=="undefined")module.exports={PAIRS,M15,STOP_ATR,pipOf,dpOf,parseCandles,analyse,evalAt,backtest,edgeVerdict};
+/* ---------- plain words ---------- */
+const CCY={EUR:"euro",GBP:"British pound",USD:"US dollar",JPY:"Japanese yen",AUD:"Australian dollar",CAD:"Canadian dollar",CHF:"Swiss franc",NZD:"New Zealand dollar"};
+const pairName=p=>{const[a,b]=p.split("/"),n=CCY[a];return n[0].toUpperCase()+n.slice(1)+" vs "+CCY[b]};
+const betText=(p,dir)=>{const[a,b]=p.split("/");return"the "+CCY[a]+(dir>0?" rises":" falls")+" against the "+CCY[b]};
+function plainWait(label){
+  if(/No clear trend|Not enough/.test(label))return"No clear direction, so it's hard to guess. Stay out.";
+  if(/outside session/.test(label))return"Quiet hours. Prices move less and costs are higher. Stay out.";
+  if(/^Uptrend/.test(label))return"Rising, but the price has run ahead. Wait for a dip.";
+  if(/^Downtrend/.test(label))return"Falling, but the price has dropped too fast. Wait for a bounce.";
+  return label;
+}
+function plainVerdict(v,b){
+  if(v.c==="good")return`In a test on past prices for this pair, this rule made money on average (${b.n} trades, ${Math.round(b.win*100)}% won). Past results don't guarantee future ones.`;
+  if(!b||b.n<30)return`Too few past examples (${b?b.n:0}) to tell whether this rule works on this pair. Practice only.`;
+  if(v.c==="bad")return`In a test on past prices for this pair, this rule lost money (${b.n} trades, ${Math.round(b.win*100)}% won). Practice only, or skip it.`;
+  return`In a test on past prices for this pair, this rule didn't reliably make money (${b.n} trades, ${Math.round(b.win*100)}% won). Practice only.`;
+}
+if(typeof module!=="undefined")module.exports={PAIRS,M15,STOP_ATR,pipOf,dpOf,parseCandles,analyse,evalAt,backtest,edgeVerdict,pairName,betText,plainWait,plainVerdict};
