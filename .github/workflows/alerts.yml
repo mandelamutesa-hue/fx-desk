@@ -1,0 +1,30 @@
+name: FX setup alerts
+on:
+  schedule:
+    # Two minutes after each 15-minute candle closes, 07:00-19:47 UTC (10:00-22:47 Nairobi), Monday to Friday.
+    - cron: "2,17,32,47 7-19 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      send_test:
+        description: Send a test notification
+        type: boolean
+        default: true
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node alert.js
+        env:
+          TWELVE_DATA_KEY: ${{ secrets.TWELVE_DATA_KEY }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          SEND_TEST: ${{ inputs.send_test }}
+          REWARD_MULTIPLE: "2"
+          SPREAD_PIPS: "1"
+          ONLY_PROVEN: "false"
