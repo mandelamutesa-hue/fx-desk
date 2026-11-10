@@ -74,4 +74,26 @@ function plainVerdict(v,b){
   if(v.c==="bad")return`In a test on past prices for this pair, this rule lost money (${b.n} trades, ${Math.round(b.win*100)}% won). Practice only, or skip it.`;
   return`In a test on past prices for this pair, this rule didn't reliably make money (${b.n} trades, ${Math.round(b.win*100)}% won). Practice only.`;
 }
-if(typeof module!=="undefined")module.exports={PAIRS,M15,STOP_ATR,pipOf,dpOf,parseCandles,analyse,evalAt,backtest,edgeVerdict,pairName,betText,plainWait,plainVerdict};
+/* ---------- news ---------- */
+const NEWS_BEFORE=60*60000,NEWS_AFTER=30*60000,NEWS_AHEAD=8*36e5,NEWS_STALE=36*36e5;
+function parseCalendar(arr){
+  if(!Array.isArray(arr))throw new Error("Calendar was not a list");
+  return arr.map(x=>({title:String(x.title||"").trim(),currency:String(x.country||"").trim(),time:Date.parse(x.date),impact:String(x.impact||"").trim(),forecast:String(x.forecast||""),previous:String(x.previous||"")}))
+    .filter(x=>isFinite(x.time)&&CCY[x.currency]&&/^(High|Medium|Holiday)$/.test(x.impact)).sort((a,b)=>a.time-b.time);
+}
+function plainEvent(t){
+  const R=[[/Non-?Farm|NFP/i,"US jobs report"],[/FOMC|Federal Funds/i,"US interest-rate decision"],[/Rate Statement|Interest Rate|Cash Rate|Rate Decision|Monetary Policy|Official Bank Rate|Refinancing/i,"interest-rate decision"],
+    [/CPI|Inflation|PCE/i,"inflation figures"],[/GDP/i,"economic growth figures"],[/Unemployment|Employment|Claimant|Jobless|Payroll/i,"jobs figures"],[/Retail Sales/i,"shop sales figures"],
+    [/PMI|ISM/i,"business survey"],[/Speaks|Testifies|Press Conference|Minutes/i,"central bank speech or minutes"],[/Trade Balance/i,"trade figures"]];
+  for(const[r,w]of R)if(r.test(t))return w;return t;
+}
+function newsFor(pair,news,now){
+  if(!news||!Array.isArray(news.events)||!(now-news.fetchedAt<=NEWS_STALE))return{ok:false};
+  const cs=pair.split("/"),ev=news.events.filter(x=>cs.includes(x.currency));
+  const block=ev.find(x=>x.impact==="High"&&x.time-now<=NEWS_BEFORE&&now-x.time<=NEWS_AFTER);
+  const later=ev.filter(x=>x.impact==="High"&&x.time-now>NEWS_BEFORE&&x.time-now<=NEWS_AHEAD);
+  const holiday=ev.find(x=>x.impact==="Holiday"&&Math.abs(x.time-now)<18*36e5);
+  return{ok:true,block,later,holiday};
+}
+const eventLine=(x,fmt)=>`${plainEvent(x.title)} for the ${CCY[x.currency]} (${fmt(x.time)})`;
+if(typeof module!=="undefined")module.exports={PAIRS,M15,STOP_ATR,pipOf,dpOf,parseCandles,analyse,evalAt,backtest,edgeVerdict,pairName,betText,plainWait,plainVerdict,CCY,parseCalendar,plainEvent,newsFor,eventLine};

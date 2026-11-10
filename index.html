@@ -134,6 +134,10 @@ button:disabled{opacity:.5;cursor:not-allowed}
       <section class="panel" id="sDetail" aria-live="polite"></section>
     </div>
     <section class="panel">
+      <h2>Big news this week</h2>
+      <div id="sNews"></div>
+    </section>
+    <section class="panel">
       <h2>My money settings</h2>
       <div class="fields">
         <label>Account size (USD)<input id="sBal" type="number" min="1" step="any"></label>
@@ -326,8 +330,9 @@ function renderMain(){
   const ck=$("check"),news=store.get("fxdesk.news")===new Date().toISOString().slice(0,13);ck.textContent="";
   const items=[[fresh,d.live?"Prices updated in the last 5 minutes, market open":"Live prices connected"],[hr>=SESSION[0]&&hr<SESSION[1],"Inside session hours"],[!!P.dirv,"Rule shows a setup on the latest closed candle"],[v.c==="good","Test shows an edge on this pair after spread"],[P.I.risk<=2&&P.pos.lots>0,"Risk is 2% or less and the size is tradable"]];
   for(const[ok,t]of items){const li=document.createElement("li");li.innerHTML='<span class="'+(ok?"y":"n")+'" aria-hidden="true">'+(ok?"✓":"✕")+'</span><span></span>';li.children[1].textContent=(ok?"":"Not yet: ")+t;ck.appendChild(li)}
-  const li=document.createElement("li");li.innerHTML='<input type="checkbox" id="newsChk" aria-label="News checked"><span>No major release for either currency in the next hour. <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener">Check the calendar</a></span>';ck.appendChild(li);
-  const nc=$("newsChk");nc.checked=news;nc.onchange=()=>{nc.checked?store.set("fxdesk.news",new Date().toISOString().slice(0,13)):store.del("fxdesk.news")};
+  const nw=newsFor(p,newsData,Date.now()),li=document.createElement("li"),okN=nw.ok&&!nw.block;
+  li.innerHTML='<span class="'+(okN?"y":"n")+'" aria-hidden="true">'+(okN?"✓":"✕")+'</span><span></span>';
+  li.children[1].textContent=!nw.ok?"Not yet: news check available (check the calendar yourself)":nw.block?"Not yet: big news soon, "+eventLine(nw.block,newsWhen):"No big news for either currency within the hour";ck.appendChild(li);
   const bt=$("bt");bt.textContent="";const pb=(k,val)=>{const a=document.createElement("dt"),c=document.createElement("dd");a.textContent=k;c.textContent=val;bt.append(a,c)};
   pb("Candles tested",fmt(d.A.C.length,0));pb("Trades",String(b.n));
   if(b.n){pb("Win rate",(b.win*100).toFixed(0)+"%");pb("Average result",(b.avg>=0?"+":"")+b.avg.toFixed(2)+"R");pb("Likely range of average",b.low.toFixed(2)+"R to "+b.high.toFixed(2)+"R");pb("Verdict",v.t)}
@@ -359,6 +364,31 @@ function drawChart(p,P){
   ln(A.e20,[]);ln(A.e50,[5,4]);
   if(P.dirv)[[P.entry,acc,"Entry"],[P.stop,down,"Stop"],[P.tgt,up,"Target"]].forEach(([v,col,t])=>{g.strokeStyle=col;g.lineWidth=1.3;g.setLineDash([2,3]);g.beginPath();g.moveTo(0,y(v));g.lineTo(pw,y(v));g.stroke();g.setLineDash([]);g.fillStyle=col;g.textAlign="right";g.fillText(t,pw-4,y(v)-8)});
 }
+/* ---------- news ---------- */
+let newsData=null;
+function newsUrls(){
+  const u=[],host=location.hostname,repo=location.pathname.split("/")[1];
+  if(host.endsWith(".github.io")&&repo)u.push(`https://raw.githubusercontent.com/${host.split(".")[0]}/${repo}/main/news.json`);
+  u.push("news.json");return u;
+}
+async function loadNews(){
+  for(const u of newsUrls()){try{const r=await fetch(u,{cache:"no-store"});if(!r.ok)continue;const j=await r.json();if(j&&Array.isArray(j.events)){newsData=j;render();return}}catch(e){}}
+  render();
+}
+const newsWhen=t=>new Date(t).toLocaleString(undefined,{weekday:"short",hour:"2-digit",minute:"2-digit"});
+function renderNews(){
+  const el=$("sNews");el.textContent="";const now=Date.now(),ok=newsData&&now-newsData.fetchedAt<=NEWS_STALE;
+  const s=document.createElement("p");s.className="sub";
+  if(!ok){s.innerHTML='The news check isn\'t available yet. It updates once the alert job has run. Until then, check the <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener">news calendar</a> yourself.';el.appendChild(s);return}
+  const up=newsData.events.filter(x=>x.impact!=="Medium"&&x.time>now-NEWS_AFTER).slice(0,10);
+  s.textContent=up.length?"Possible trades are put on hold from 1 hour before to 30 minutes after each of these.":"No big news left this week for these currencies.";
+  el.appendChild(s);
+  if(up.length){const ul=document.createElement("ul");ul.className="check";
+    for(const x of up){const li=document.createElement("li");li.innerHTML='<span aria-hidden="true">•</span><span></span>';
+      li.children[1].textContent=x.impact==="Holiday"?`${newsWhen(x.time)}: bank holiday for the ${CCY[x.currency]}`:`${newsWhen(x.time)}: ${plainEvent(x.title)} for the ${CCY[x.currency]} (${x.title})`;ul.appendChild(li)}
+    el.appendChild(ul)}
+  const f=document.createElement("p");f.className="note";f.textContent="Calendar checked "+newsWhen(newsData.fetchedAt)+". Source: ForexFactory.";el.appendChild(f);
+}
 /* ---------- simple view ---------- */
 let view=store.get("fxdesk.view")==="advanced"?"advanced":"simple";
 function applyView(){$("simple").hidden=view!=="simple";$("adv").hidden=view!=="advanced";$("viewBtn").textContent=view==="simple"?"Show advanced view":"Show simple view"}
@@ -366,6 +396,8 @@ function simpleState(p){
   if(!isLoaded(p))return{chip:"Loading",cls:"",why:"Getting prices…"};
   if(marketClosed())return{chip:"Closed",cls:"",why:"The market is closed for the weekend. It reopens late Sunday night."};
   const s=stateOf(p);
+  const n=newsFor(p,newsData,Date.now());
+  if(s.dir&&n.ok&&n.block)return{chip:"Wait",cls:"",why:"Big news soon: "+eventLine(n.block,newsWhen)+". Prices can jump past your stop-loss."};
   if(s.dir)return{chip:s.dir>0?"Possible buy":"Possible sell",cls:s.dir>0?"buy":"sell",why:"Bet that "+betText(p,s.dir)+"."};
   return{chip:"Wait",cls:"",why:plainWait(s.label)};
 }
@@ -406,7 +438,7 @@ function renderSimple(){
   $("sSummary").textContent=mode==="sample"?"These are made-up sample prices. Connect live prices above to see real signals.":
     marketClosed()?"The market is closed. Nothing to do until it reopens.":
     setups.length?(setups.length===1?"1 possible trade right now: ":setups.length+" possible trades right now: ")+setups.join(", "):"Nothing to do right now. That's normal.";
-  renderDetail();renderPractice();
+  renderDetail();renderPractice();renderNews();
 }
 function renderDetail(){
   const el=$("sDetail"),p=selected;el.textContent="";
@@ -428,7 +460,10 @@ function renderDetail(){
 <li>Set the <b>stop-loss</b> to <b>${P.stop.toFixed(P.dp)}</b>. If the price gets there, the trade closes and you lose about <b>${usd(loss)}</b>.</li>
 <li>Set the <b>take-profit</b> to <b>${P.tgt.toFixed(P.dp)}</b>. If the price gets there, the trade closes and you gain about <b>${usd(gain)}</b>.</li>
 <li>If neither happens within 8 hours, close the trade yourself.</li>`;
-  const n=add("p",null,"note");n.innerHTML='Before you enter, check there\'s no big news for these currencies in the next hour on the <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener">news calendar</a>.';
+  const nw=newsFor(p,newsData,Date.now()),n=add("p",null,"note");
+  if(!nw.ok)n.innerHTML='News check unavailable right now. Check the <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener">news calendar</a> yourself before you enter.';
+  else{n.textContent=nw.later.length?"Heads-up: "+nw.later.map(x=>eventLine(x,newsWhen)).join("; ")+". The trade may still be open then, and prices can jump.":"News check: no big news for these currencies in the next 8 hours.";
+    if(nw.holiday)add("p",`Bank holiday for the ${CCY[nw.holiday.currency]} today: fewer traders, so prices can move oddly.`,"note")}
   const open=loadPr().some(t=>t.status==="open"&&t.pair===p&&Math.abs(t.entry-P.entry)<P.dist*.25);
   const btn=add("button",open?"Already practising this trade":"Practice this trade (no real money)");btn.type="button";btn.id="practiceBtn";btn.disabled=mode!=="live"||open;
   if(mode!=="live")add("p","Connect live prices to practise.","note");
@@ -464,6 +499,7 @@ $("viewBtn").onclick=()=>{view=view==="simple"?"advanced":"simple";store.set("fx
 for(const[s,t]of[["sBal","bal"],["sRisk","risk"]])$(s).addEventListener("input",()=>{$(t).value=$(s).value;store.set("fxdesk."+t,$(s).value);render()});
 $("sDetail").addEventListener("click",ev=>{if(ev.target.id==="practiceBtn")startPractice(selected)});
 applyView();
+loadNews();setInterval(()=>{if(!document.hidden)loadNews()},30*60000);
 let rz;addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(render,150)});
 loadSample();
 if(!window.__NO_BOOT){const k=store.get("fxdesk.key");if(k){apiKey=k;startLive()}render();setInterval(renderStatus,1000)}

@@ -24,3 +24,8 @@ A rule-based forex setup scanner for Android. It flags rule matches. It does not
 - GitHub may pause schedules after 60 days with no repository activity. It emails you, and you can turn them back on from the Actions tab.
 - Alerts use up to 364 of the 800 free daily Twelve Data requests. The app stops itself at 400 for the day.
 - To only get alerts when the past test shows an edge, change `ONLY_PROVEN` to `"true"` in `.github/workflows/alerts.yml`. Set `SPREAD_PIPS` to your broker's spread there too.
+
+## News check
+- Each hour the alert job fetches the ForexFactory economic calendar and saves it as `news.json` in the repository. The app reads it from there.
+- From 1 hour before to 30 minutes after a big event for either currency, possible trades show as "Wait" and alerts are held back.
+- If the calendar can't be fetched, the app and alerts say the news check is unavailable. They never treat a missing calendar as "no news".
