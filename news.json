@@ -1,0 +1,118 @@
+{
+ "fetchedAt": 1794326065162,
+ "source": "ForexFactory calendar",
+ "events": [
+  {
+   "title": "BOE Gov Bailey Speaks",
+   "currency": "GBP",
+   "time": 1794245100000,
+   "impact": "Medium",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "FOMC Member Waller Speaks",
+   "currency": "USD",
+   "time": 1794301200000,
+   "impact": "Medium",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "Core CPI m/m",
+   "currency": "USD",
+   "time": 1794317400000,
+   "impact": "High",
+   "forecast": "0.2%",
+   "previous": "0.3%"
+  },
+  {
+   "title": "CPI m/m",
+   "currency": "USD",
+   "time": 1794317400000,
+   "impact": "High",
+   "forecast": "0.3%",
+   "previous": "0.6%"
+  },
+  {
+   "title": "French Bank Holiday",
+   "currency": "EUR",
+   "time": 1794380460000,
+   "impact": "Holiday",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "ECB President Lagarde Speaks",
+   "currency": "EUR",
+   "time": 1794390300000,
+   "impact": "Medium",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "Bank Holiday",
+   "currency": "CAD",
+   "time": 1794402000000,
+   "impact": "Holiday",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "Bank Holiday",
+   "currency": "USD",
+   "time": 1794402000000,
+   "impact": "Holiday",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "GDP m/m",
+   "currency": "GBP",
+   "time": 1794466800000,
+   "impact": "High",
+   "forecast": "0.0%",
+   "previous": "0.1%"
+  },
+  {
+   "title": "Prelim GDP q/q",
+   "currency": "GBP",
+   "time": 1794466800000,
+   "impact": "Medium",
+   "forecast": "0.7%",
+   "previous": "0.5%"
+  },
+  {
+   "title": "Unemployment Claims",
+   "currency": "USD",
+   "time": 1794490200000,
+   "impact": "Medium",
+   "forecast": "194K",
+   "previous": "189K"
+  },
+  {
+   "title": "ECB President Lagarde Speaks",
+   "currency": "EUR",
+   "time": 1794511800000,
+   "impact": "Medium",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "Core PPI m/m",
+   "currency": "USD",
+   "time": 1794576600000,
+   "impact": "High",
+   "forecast": "0.3%",
+   "previous": "0.7%"
+  },
+  {
+   "title": "PPI m/m",
+   "currency": "USD",
+   "time": 1794576600000,
+   "impact": "High",
+   "forecast": "0.4%",
+   "previous": "1.3%"
+  }
+ ]
+}
