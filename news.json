@@ -1,118 +1,222 @@
 {
- "fetchedAt": 1794644732952,
+ "fetchedAt": 1794847224777,
  "source": "ForexFactory calendar",
  "events": [
   {
-   "title": "BOE Gov Bailey Speaks",
-   "currency": "GBP",
-   "time": 1794245100000,
-   "impact": "Medium",
-   "forecast": "",
-   "previous": ""
-  },
-  {
-   "title": "FOMC Member Waller Speaks",
-   "currency": "USD",
-   "time": 1794301200000,
-   "impact": "Medium",
-   "forecast": "",
-   "previous": ""
-  },
-  {
-   "title": "Core CPI m/m",
-   "currency": "USD",
-   "time": 1794317400000,
-   "impact": "High",
-   "forecast": "0.2%",
-   "previous": "0.3%"
-  },
-  {
    "title": "CPI m/m",
-   "currency": "USD",
-   "time": 1794317400000,
+   "currency": "CAD",
+   "time": 1794835800000,
    "impact": "High",
    "forecast": "0.3%",
-   "previous": "0.6%"
+   "previous": "0.1%"
   },
   {
-   "title": "French Bank Holiday",
+   "title": "Median CPI y/y",
+   "currency": "CAD",
+   "time": 1794835800000,
+   "impact": "High",
+   "forecast": "2.0%",
+   "previous": "1.9%"
+  },
+  {
+   "title": "Trimmed CPI y/y",
+   "currency": "CAD",
+   "time": 1794835800000,
+   "impact": "High",
+   "forecast": "1.9%",
+   "previous": "1.8%"
+  },
+  {
+   "title": "Common CPI y/y",
+   "currency": "CAD",
+   "time": 1794835800000,
+   "impact": "Medium",
+   "forecast": "2.5%",
+   "previous": "2.4%"
+  },
+  {
+   "title": "Fed Chairman Warsh Speaks",
+   "currency": "USD",
+   "time": 1794848400000,
+   "impact": "High",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "RBA Gov Bullock Speaks",
+   "currency": "AUD",
+   "time": 1794869400000,
+   "impact": "High",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "Inflation Expectations q/q",
+   "currency": "NZD",
+   "time": 1794880800000,
+   "impact": "High",
+   "forecast": "",
+   "previous": "2.34%"
+  },
+  {
+   "title": "Average Earnings Index 3m/y",
+   "currency": "GBP",
+   "time": 1794898800000,
+   "impact": "Medium",
+   "forecast": "3.5%",
+   "previous": "3.7%"
+  },
+  {
+   "title": "Core Retail Sales m/m",
+   "currency": "USD",
+   "time": 1794922200000,
+   "impact": "High",
+   "forecast": "0.4%",
+   "previous": "0.9%"
+  },
+  {
+   "title": "Retail Sales m/m",
+   "currency": "USD",
+   "time": 1794922200000,
+   "impact": "High",
+   "forecast": "0.2%",
+   "previous": "0.8%"
+  },
+  {
+   "title": "Wage Price Index q/q",
+   "currency": "AUD",
+   "time": 1794961800000,
+   "impact": "Medium",
+   "forecast": "0.9%",
+   "previous": "0.8%"
+  },
+  {
+   "title": "CPI y/y",
+   "currency": "GBP",
+   "time": 1794985200000,
+   "impact": "High",
+   "forecast": "3.6%",
+   "previous": "3.5%"
+  },
+  {
+   "title": "BOE Gov Bailey Speaks",
+   "currency": "GBP",
+   "time": 1794987000000,
+   "impact": "Medium",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "ECB Financial Stability Review",
    "currency": "EUR",
-   "time": 1794380460000,
-   "impact": "Holiday",
+   "time": 1794992400000,
+   "impact": "Medium",
    "forecast": "",
    "previous": ""
   },
   {
    "title": "ECB President Lagarde Speaks",
    "currency": "EUR",
-   "time": 1794390300000,
+   "time": 1795011900000,
    "impact": "Medium",
    "forecast": "",
    "previous": ""
   },
   {
-   "title": "Bank Holiday",
-   "currency": "CAD",
-   "time": 1794402000000,
-   "impact": "Holiday",
-   "forecast": "",
-   "previous": ""
-  },
-  {
-   "title": "Bank Holiday",
-   "currency": "USD",
-   "time": 1794402000000,
-   "impact": "Holiday",
-   "forecast": "",
-   "previous": ""
-  },
-  {
-   "title": "GDP m/m",
+   "title": "BOE Gov Bailey Speaks",
    "currency": "GBP",
-   "time": 1794466800000,
+   "time": 1795014000000,
    "impact": "High",
-   "forecast": "0.0%",
-   "previous": "0.1%"
+   "forecast": "",
+   "previous": ""
   },
   {
-   "title": "Prelim GDP q/q",
-   "currency": "GBP",
-   "time": 1794466800000,
+   "title": "RBNZ Gov Breman Speaks",
+   "currency": "NZD",
+   "time": 1795024800000,
    "impact": "Medium",
-   "forecast": "0.7%",
-   "previous": "0.5%"
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "FOMC Meeting Minutes",
+   "currency": "USD",
+   "time": 1795028400000,
+   "impact": "High",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "Employment Change",
+   "currency": "AUD",
+   "time": 1795048200000,
+   "impact": "High",
+   "forecast": "25.2K",
+   "previous": "-39.3K"
+  },
+  {
+   "title": "Unemployment Rate",
+   "currency": "AUD",
+   "time": 1795048200000,
+   "impact": "High",
+   "forecast": "4.7%",
+   "previous": "4.7%"
+  },
+  {
+   "title": "ECB President Lagarde Speaks",
+   "currency": "EUR",
+   "time": 1795095000000,
+   "impact": "Medium",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "Philly Fed Manufacturing Index",
+   "currency": "USD",
+   "time": 1795095000000,
+   "impact": "Medium",
+   "forecast": "19.2",
+   "previous": "20.9"
   },
   {
    "title": "Unemployment Claims",
    "currency": "USD",
-   "time": 1794490200000,
+   "time": 1795095000000,
    "impact": "Medium",
-   "forecast": "194K",
-   "previous": "189K"
+   "forecast": "199K",
+   "previous": "200K"
+  },
+  {
+   "title": "Retail Sales m/m",
+   "currency": "GBP",
+   "time": 1795158000000,
+   "impact": "Medium",
+   "forecast": "0.0%",
+   "previous": "-0.4%"
   },
   {
    "title": "ECB President Lagarde Speaks",
    "currency": "EUR",
-   "time": 1794511800000,
+   "time": 1795162500000,
    "impact": "Medium",
    "forecast": "",
    "previous": ""
   },
   {
-   "title": "Core PPI m/m",
+   "title": "Revised UoM Consumer Sentiment",
    "currency": "USD",
-   "time": 1794576600000,
-   "impact": "High",
-   "forecast": "0.3%",
-   "previous": "0.7%"
+   "time": 1795186800000,
+   "impact": "Medium",
+   "forecast": "52.1",
+   "previous": "51.0"
   },
   {
-   "title": "PPI m/m",
+   "title": "Revised UoM Inflation Expectations",
    "currency": "USD",
-   "time": 1794576600000,
-   "impact": "High",
-   "forecast": "0.4%",
-   "previous": "1.3%"
+   "time": 1795186800000,
+   "impact": "Medium",
+   "forecast": "",
+   "previous": "4.3%"
   }
  ]
 }
