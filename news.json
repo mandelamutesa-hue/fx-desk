@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794933444038,
+ "fetchedAt": 1794958757674,
  "source": "ForexFactory calendar",
  "events": [
   {
@@ -183,7 +183,7 @@
    "currency": "USD",
    "time": 1795095000000,
    "impact": "Medium",
-   "forecast": "19.2",
+   "forecast": "20.6",
    "previous": "20.9"
   },
   {
@@ -191,7 +191,7 @@
    "currency": "USD",
    "time": 1795095000000,
    "impact": "Medium",
-   "forecast": "199K",
+   "forecast": "198K",
    "previous": "200K"
   },
   {
@@ -215,7 +215,7 @@
    "currency": "USD",
    "time": 1795186800000,
    "impact": "Medium",
-   "forecast": "52.1",
+   "forecast": "51.7",
    "previous": "51.0"
   },
   {
