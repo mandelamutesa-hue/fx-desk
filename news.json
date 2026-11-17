@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794847224777,
+ "fetchedAt": 1794875365243,
  "source": "ForexFactory calendar",
  "events": [
   {
@@ -79,7 +79,7 @@
    "currency": "USD",
    "time": 1794922200000,
    "impact": "High",
-   "forecast": "0.2%",
+   "forecast": "0.1%",
    "previous": "0.8%"
   },
   {
@@ -87,7 +87,7 @@
    "currency": "AUD",
    "time": 1794961800000,
    "impact": "Medium",
-   "forecast": "0.9%",
+   "forecast": "1.0%",
    "previous": "0.8%"
   },
   {
@@ -151,7 +151,7 @@
    "currency": "AUD",
    "time": 1795048200000,
    "impact": "High",
-   "forecast": "25.2K",
+   "forecast": "25.5K",
    "previous": "-39.3K"
   },
   {
