@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794875365243,
+ "fetchedAt": 1794933444038,
  "source": "ForexFactory calendar",
  "events": [
   {
@@ -47,6 +47,14 @@
    "currency": "AUD",
    "time": 1794869400000,
    "impact": "High",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "RBNZ Gov Breman Speaks",
+   "currency": "NZD",
+   "time": 1794873600000,
+   "impact": "Medium",
    "forecast": "",
    "previous": ""
   },
