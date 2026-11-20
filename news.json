@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1795104787287,
+ "fetchedAt": 1795189955856,
  "source": "ForexFactory calendar",
  "events": [
   {
@@ -225,6 +225,14 @@
    "impact": "Medium",
    "forecast": "",
    "previous": "4.3%"
+  },
+  {
+   "title": "President Trump Speaks",
+   "currency": "USD",
+   "time": 1795194000000,
+   "impact": "Medium",
+   "forecast": "",
+   "previous": ""
   }
  ]
 }
