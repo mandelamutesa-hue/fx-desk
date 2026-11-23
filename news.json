@@ -1,238 +1,158 @@
 {
- "fetchedAt": 1795189955856,
+ "fetchedAt": 1795460089867,
  "source": "ForexFactory calendar",
  "events": [
   {
-   "title": "CPI m/m",
-   "currency": "CAD",
-   "time": 1794835800000,
-   "impact": "High",
-   "forecast": "0.3%",
-   "previous": "0.1%"
+   "title": "Bank Holiday",
+   "currency": "JPY",
+   "time": 1795392000000,
+   "impact": "Holiday",
+   "forecast": "",
+   "previous": ""
   },
   {
-   "title": "Median CPI y/y",
-   "currency": "CAD",
-   "time": 1794835800000,
-   "impact": "High",
-   "forecast": "2.0%",
-   "previous": "1.9%"
-  },
-  {
-   "title": "Trimmed CPI y/y",
-   "currency": "CAD",
-   "time": 1794835800000,
-   "impact": "High",
-   "forecast": "1.9%",
-   "previous": "1.8%"
-  },
-  {
-   "title": "Common CPI y/y",
-   "currency": "CAD",
-   "time": 1794835800000,
+   "title": "French Flash Manufacturing PMI",
+   "currency": "EUR",
+   "time": 1795421700000,
    "impact": "Medium",
-   "forecast": "2.5%",
-   "previous": "2.4%"
+   "forecast": "49.8",
+   "previous": "49.3"
   },
   {
-   "title": "Fed Chairman Warsh Speaks",
-   "currency": "USD",
-   "time": 1794848400000,
-   "impact": "High",
-   "forecast": "",
-   "previous": ""
-  },
-  {
-   "title": "RBA Gov Bullock Speaks",
-   "currency": "AUD",
-   "time": 1794869400000,
-   "impact": "High",
-   "forecast": "",
-   "previous": ""
-  },
-  {
-   "title": "RBNZ Gov Breman Speaks",
-   "currency": "NZD",
-   "time": 1794873600000,
+   "title": "French Flash Services PMI",
+   "currency": "EUR",
+   "time": 1795421700000,
    "impact": "Medium",
-   "forecast": "",
-   "previous": ""
+   "forecast": "47.4",
+   "previous": "48.4"
   },
   {
-   "title": "Inflation Expectations q/q",
-   "currency": "NZD",
-   "time": 1794880800000,
-   "impact": "High",
-   "forecast": "",
-   "previous": "2.34%"
+   "title": "German Flash Manufacturing PMI",
+   "currency": "EUR",
+   "time": 1795422600000,
+   "impact": "Medium",
+   "forecast": "54.1",
+   "previous": "54.2"
   },
   {
-   "title": "Average Earnings Index 3m/y",
+   "title": "German Flash Services PMI",
+   "currency": "EUR",
+   "time": 1795422600000,
+   "impact": "Medium",
+   "forecast": "52.4",
+   "previous": "51.7"
+  },
+  {
+   "title": "Flash Manufacturing PMI",
    "currency": "GBP",
-   "time": 1794898800000,
+   "time": 1795426200000,
    "impact": "Medium",
-   "forecast": "3.5%",
-   "previous": "3.7%"
+   "forecast": "53.0",
+   "previous": "52.8"
   },
   {
-   "title": "Core Retail Sales m/m",
+   "title": "Flash Services PMI",
+   "currency": "GBP",
+   "time": 1795426200000,
+   "impact": "Medium",
+   "forecast": "53.0",
+   "previous": "53.1"
+  },
+  {
+   "title": "Flash Manufacturing PMI",
    "currency": "USD",
-   "time": 1794922200000,
+   "time": 1795445100000,
+   "impact": "Medium",
+   "forecast": "54.5",
+   "previous": "56.0"
+  },
+  {
+   "title": "Flash Services PMI",
+   "currency": "USD",
+   "time": 1795445100000,
+   "impact": "Medium",
+   "forecast": "55.6",
+   "previous": "57.9"
+  },
+  {
+   "title": "CB Consumer Confidence",
+   "currency": "USD",
+   "time": 1795532400000,
+   "impact": "Medium",
+   "forecast": "92.1",
+   "previous": "91.7"
+  },
+  {
+   "title": "BOC Gov Macklem Speaks",
+   "currency": "CAD",
+   "time": 1795541100000,
+   "impact": "Medium",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "CPI m/m",
+   "currency": "AUD",
+   "time": 1795566600000,
    "impact": "High",
    "forecast": "0.4%",
-   "previous": "0.9%"
-  },
-  {
-   "title": "Retail Sales m/m",
-   "currency": "USD",
-   "time": 1794922200000,
-   "impact": "High",
-   "forecast": "0.1%",
-   "previous": "0.8%"
-  },
-  {
-   "title": "Wage Price Index q/q",
-   "currency": "AUD",
-   "time": 1794961800000,
-   "impact": "Medium",
-   "forecast": "1.0%",
    "previous": "0.8%"
   },
   {
    "title": "CPI y/y",
-   "currency": "GBP",
-   "time": 1794985200000,
-   "impact": "High",
-   "forecast": "3.6%",
-   "previous": "3.5%"
-  },
-  {
-   "title": "BOE Gov Bailey Speaks",
-   "currency": "GBP",
-   "time": 1794987000000,
-   "impact": "Medium",
-   "forecast": "",
-   "previous": ""
-  },
-  {
-   "title": "ECB Financial Stability Review",
-   "currency": "EUR",
-   "time": 1794992400000,
-   "impact": "Medium",
-   "forecast": "",
-   "previous": ""
-  },
-  {
-   "title": "ECB President Lagarde Speaks",
-   "currency": "EUR",
-   "time": 1795011900000,
-   "impact": "Medium",
-   "forecast": "",
-   "previous": ""
-  },
-  {
-   "title": "BOE Gov Bailey Speaks",
-   "currency": "GBP",
-   "time": 1795014000000,
-   "impact": "High",
-   "forecast": "",
-   "previous": ""
-  },
-  {
-   "title": "RBNZ Gov Breman Speaks",
-   "currency": "NZD",
-   "time": 1795024800000,
-   "impact": "Medium",
-   "forecast": "",
-   "previous": ""
-  },
-  {
-   "title": "FOMC Meeting Minutes",
-   "currency": "USD",
-   "time": 1795028400000,
-   "impact": "High",
-   "forecast": "",
-   "previous": ""
-  },
-  {
-   "title": "Employment Change",
    "currency": "AUD",
-   "time": 1795048200000,
+   "time": 1795566600000,
    "impact": "High",
-   "forecast": "25.5K",
-   "previous": "-39.3K"
-  },
-  {
-   "title": "Unemployment Rate",
-   "currency": "AUD",
-   "time": 1795048200000,
-   "impact": "High",
-   "forecast": "4.7%",
-   "previous": "4.7%"
-  },
-  {
-   "title": "ECB President Lagarde Speaks",
-   "currency": "EUR",
-   "time": 1795095000000,
-   "impact": "Medium",
-   "forecast": "",
-   "previous": ""
-  },
-  {
-   "title": "Philly Fed Manufacturing Index",
-   "currency": "USD",
-   "time": 1795095000000,
-   "impact": "Medium",
-   "forecast": "20.6",
-   "previous": "20.9"
-  },
-  {
-   "title": "Unemployment Claims",
-   "currency": "USD",
-   "time": 1795095000000,
-   "impact": "Medium",
-   "forecast": "198K",
-   "previous": "200K"
-  },
-  {
-   "title": "Retail Sales m/m",
-   "currency": "GBP",
-   "time": 1795158000000,
-   "impact": "Medium",
-   "forecast": "0.0%",
-   "previous": "-0.4%"
-  },
-  {
-   "title": "ECB President Lagarde Speaks",
-   "currency": "EUR",
-   "time": 1795162500000,
-   "impact": "Medium",
-   "forecast": "",
-   "previous": ""
-  },
-  {
-   "title": "Revised UoM Consumer Sentiment",
-   "currency": "USD",
-   "time": 1795186800000,
-   "impact": "Medium",
-   "forecast": "51.7",
-   "previous": "51.0"
-  },
-  {
-   "title": "Revised UoM Inflation Expectations",
-   "currency": "USD",
-   "time": 1795186800000,
-   "impact": "Medium",
-   "forecast": "",
+   "forecast": "4.8%",
    "previous": "4.3%"
   },
   {
-   "title": "President Trump Speaks",
+   "title": "Trimmed Mean CPI m/m",
+   "currency": "AUD",
+   "time": 1795566600000,
+   "impact": "High",
+   "forecast": "0.3%",
+   "previous": "0.3%"
+  },
+  {
+   "title": "Core PCE Price Index m/m",
    "currency": "USD",
-   "time": 1795194000000,
+   "time": 1795613400000,
+   "impact": "High",
+   "forecast": "0.3%",
+   "previous": "0.3%"
+  },
+  {
+   "title": "Prelim GDP q/q",
+   "currency": "USD",
+   "time": 1795613400000,
+   "impact": "High",
+   "forecast": "3.5%",
+   "previous": "3.4%"
+  },
+  {
+   "title": "Prelim GDP Price Index q/q",
+   "currency": "USD",
+   "time": 1795613400000,
    "impact": "Medium",
+   "forecast": "2.3%",
+   "previous": "2.3%"
+  },
+  {
+   "title": "Bank Holiday",
+   "currency": "USD",
+   "time": 1795698000000,
+   "impact": "Holiday",
    "forecast": "",
    "previous": ""
+  },
+  {
+   "title": "Tokyo Core CPI y/y",
+   "currency": "JPY",
+   "time": 1795735800000,
+   "impact": "Medium",
+   "forecast": "2.9%",
+   "previous": "2.6%"
   }
  ]
 }
