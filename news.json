@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1795545144189,
+ "fetchedAt": 1795628661775,
  "source": "ForexFactory calendar",
  "events": [
   {
@@ -137,6 +137,14 @@
    "impact": "Medium",
    "forecast": "2.3%",
    "previous": "2.3%"
+  },
+  {
+   "title": "Monetary Policy Report Hearings",
+   "currency": "GBP",
+   "time": 1795616100000,
+   "impact": "Medium",
+   "forecast": "",
+   "previous": ""
   },
   {
    "title": "Bank Holiday",
